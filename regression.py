@@ -1,9 +1,9 @@
 import requests
-import pandas
+import pandas as pd
 import scipy
-import numpy
+import numpy 
 import sys
-
+from sklearn.linear_model import ElasticNet,LinearRegression
 
 TRAIN_DATA_URL = "https://storage.googleapis.com/kubric-hiring/linreg_train.csv"
 TEST_DATA_URL = "https://storage.googleapis.com/kubric-hiring/linreg_test.csv"
@@ -16,7 +16,25 @@ def predict_price(area) -> float:
     You can run this program from the command line using `python3 regression.py`.
     """
     response = requests.get(TRAIN_DATA_URL)
-    # YOUR IMPLEMENTATION HERE
+    train_data=pd.read_csv(TRAIN_DATA_URL,header=None)
+    
+    train_area=train_data.loc[0]
+    train_price=train_data.loc[1]
+    train_area=train_area.iloc[1:]
+    
+    train_price=train_price.iloc[1:]
+    train_area=train_area.to_numpy()
+    train_price=train_price.to_numpy()
+   
+    train_area=train_area.reshape((train_area.shape[0],1))
+    train_price=train_price.reshape((train_price.shape[0],1))
+    
+    El=ElasticNet(alpha=0.5,l1_ratio=1,normalize=False)
+    El.fit(train_area,train_price)
+    area=area.reshape((area.shape[0],1))
+    
+    return El.predict(area)
+    
     ...
 
 
